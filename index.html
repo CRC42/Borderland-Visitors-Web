@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="边境来客：卡牌构筑、经营与自动塔防。打开浏览器即可试玩。">
+  <meta name="theme-color" content="#181a1e">
+  <title>边境来客 · 浏览器试玩</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100dvh; display: flex; align-items: center; background: #181a1e; color: #ece5d7; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+    .shell { width: min(1600px, calc(100vw - 32px), calc((100dvh - 124px) * 16 / 9)); margin: 20px auto; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+    h1 { margin: 0; font-size: 22px; letter-spacing: .1em; }
+    .edition { font-size: 12px; color: #b0a795; margin-left: 10px; letter-spacing: .04em; white-space: nowrap; }
+    button { border: 1px solid #72644d; border-radius: 6px; background: #292a2d; color: #ece5d7; padding: 8px 16px; cursor: pointer; font: inherit; font-size: 13px; }
+    button:hover { background: #3a3731; }
+    button:disabled { opacity: .4; cursor: default; }
+    .stage { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid #49433a; border-radius: 8px; background: #231f20; box-shadow: 0 16px 50px #0005; }
+    canvas { display: block; width: 100%; height: 100%; outline: none; }
+    #loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; padding: 30px; text-align: center; background: #231f20; }
+    #loading[hidden] { display: none; }
+    progress { width: min(320px, 80%); height: 8px; accent-color: #c3a466; }
+    #status { color: #d4c6ad; font-size: 14px; }
+    footer { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-top: 12px; color: #a9a294; font-size: 12px; line-height: 1.6; }
+    @media(max-width: 640px) { .shell { width: calc(100vw - 16px); } h1 { font-size: 18px; } .edition { display: none; } footer { gap: 4px; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header><h1>边境来客<span class="edition">浏览器试玩</span></h1><button id="fullscreen" disabled>全屏游玩</button></header>
+    <main class="stage">
+      <canvas id="unity-canvas" width="1280" height="720" tabindex="0" aria-label="边境来客游戏画面"></canvas>
+      <div id="loading"><div id="status" role="status" aria-live="polite">正在准备游戏…</div><progress id="progress" max="1" value="0"></progress></div>
+    </main>
+    <footer><span>拖拽卡牌到房间 · 完成选择后自动出战</span><span>建议使用电脑浏览器 · 首次打开请稍候</span></footer>
+  </div>
+  <script>
+    const canvas = document.querySelector('#unity-canvas');
+    const loading = document.querySelector('#loading');
+    const status = document.querySelector('#status');
+    const progress = document.querySelector('#progress');
+    const fullscreen = document.querySelector('#fullscreen');
+    const config = {"dataUrl": "Build/d4ac1806b400bf9557b0cd1382d5175b.data.unityweb", "frameworkUrl": "Build/8370b59331abfb41b866bc3a84e4655c.framework.js.unityweb", "codeUrl": "Build/c787d277e35dc0b833caee321059f7ce.wasm.unityweb", "streamingAssetsUrl": "StreamingAssets", "companyName": "Borderland", "productName": "Borderland Visitors", "productVersion": "0.3"};
+    config.devicePixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+    config.showBanner = (message, type) => {
+      if (type === 'error') { loading.hidden = false; status.textContent = '游戏加载遇到问题，请刷新页面重试。'; console.error(message); }
+      else console.warn(message);
+    };
+    const script = document.createElement('script');
+    script.src = "Build/a4867b85992aee1f879625bf8f72f284.loader.js";
+    script.onload = () => createUnityInstance(canvas, config, value => {
+      progress.value = value;
+      status.textContent = '正在加载游戏 ' + Math.round(value * 100) + '%';
+    }).then(instance => {
+      loading.hidden = true;
+      fullscreen.disabled = false;
+      fullscreen.onclick = () => instance.SetFullscreen(1);
+      canvas.focus();
+    }).catch(error => {
+      status.textContent = '游戏加载遇到问题，请刷新页面重试。';
+      console.error(error);
+    });
+    script.onerror = () => { status.textContent = '下载未完成，请检查网络后刷新重试。'; };
+    document.body.appendChild(script);
+  </script>
+</body>
+</html>
