@@ -18,6 +18,8 @@
     button:disabled { opacity: .4; cursor: default; }
     .stage { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid #49433a; border-radius: 8px; background: #231f20; box-shadow: 0 16px 50px #0005; }
     canvas { display: block; width: 100%; height: 100%; outline: none; }
+    canvas:fullscreen { width: 100vw; height: 100vh; }
+    canvas:-webkit-full-screen { width: 100vw; height: 100vh; }
     #loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; padding: 30px; text-align: center; background: #231f20; }
     #loading[hidden] { display: none; }
     progress { width: min(320px, 80%); height: 8px; accent-color: #c3a466; }
@@ -52,10 +54,15 @@
     script.onload = () => createUnityInstance(canvas, config, value => {
       progress.value = value;
       status.textContent = '正在加载游戏 ' + Math.round(value * 100) + '%';
-    }).then(instance => {
+    }).then(() => {
       loading.hidden = true;
       fullscreen.disabled = false;
-      fullscreen.onclick = () => instance.SetFullscreen(1);
+      fullscreen.onclick = async () => {
+        const enter = canvas.requestFullscreen || canvas.webkitRequestFullscreen;
+        if (!enter) { fullscreen.textContent = '请使用浏览器全屏'; return; }
+        try { await enter.call(canvas); }
+        catch { fullscreen.textContent = '请使用浏览器全屏'; }
+      };
       canvas.focus();
     }).catch(error => {
       status.textContent = '游戏加载遇到问题，请刷新页面重试。';
