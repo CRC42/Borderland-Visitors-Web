@@ -43,14 +43,14 @@
     const status = document.querySelector('#status');
     const progress = document.querySelector('#progress');
     const fullscreen = document.querySelector('#fullscreen');
-    const config = {"dataUrl": "Build/3a0dde5d9d16db4e7fff185898f13cf6.data.unityweb", "frameworkUrl": "Build/af106e4ccee62dd255ffa2587611bd1b.framework.js.unityweb", "codeUrl": "Build/7ea7c4a8193e4a33c359ef6248fa473f.wasm.unityweb", "streamingAssetsUrl": "StreamingAssets", "companyName": "Borderland", "productName": "Borderland Visitors", "productVersion": "0.3"};
+    const config = {"dataUrl": "Build/8cb337fc0e0b55d7f6990794dbc6be6d.data.unityweb", "frameworkUrl": "Build/f273b6354ca0cc3148684341dc1c1444.framework.js.unityweb", "codeUrl": "Build/613caa97fb1a86c2298ebf03f277cdfc.wasm.unityweb", "streamingAssetsUrl": "StreamingAssets", "companyName": "Borderland", "productName": "Borderland Visitors", "productVersion": "0.3"};
     config.devicePixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
     config.showBanner = (message, type) => {
       if (type === 'error') { loading.hidden = false; status.textContent = '游戏加载遇到问题，请刷新页面重试。'; console.error(message); }
       else console.warn(message);
     };
     const script = document.createElement('script');
-    script.src = "Build/c84701fb9e26ef1c48b1f7d5d8eea335.loader.js";
+    script.src = "Build/d4b3bf1becedbadfc98ffc4f324614b8.loader.js";
     script.onload = () => createUnityInstance(canvas, config, value => {
       progress.value = value;
       status.textContent = '正在加载游戏 ' + Math.round(value * 100) + '%';
